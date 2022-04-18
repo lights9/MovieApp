@@ -16,13 +16,14 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.movieapp.models.Movie
 import com.example.movieapp.models.getMovies
+import com.example.movieapp.viewmodels.FavoritesViewModel
 import com.example.movieapp.widgets.MovieRow
 
 
-@Preview(showBackground = true)
 @Composable
 fun FavoritesScreen(
-    navController: NavController = rememberNavController()
+    navController: NavController,
+    viewModel: FavoritesViewModel
 ) {
 
     Scaffold(
@@ -42,17 +43,20 @@ fun FavoritesScreen(
 
         }
     ) {
-        MainContent(movieList = getMovies().subList(4,6))
+        MainContent(movieList = viewModel.favoriteMovies, navController = navController)
     }
 }
 
 @Composable
-fun MainContent(movieList: List<Movie>) {
-    LazyColumn {
-        items(movieList) { movie ->
-            MovieRow(movie = movie){
+fun MainContent(movieList: List<Movie>, navController: NavController) {
+    Column(modifier = Modifier.padding(12.dp)){
+        LazyColumn {
+            items(movieList) { movie ->
+                MovieRow(movie = movie){
 
+                }
             }
         }
     }
+
 }

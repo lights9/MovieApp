@@ -8,19 +8,19 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.movieapp.models.Movie
 import com.example.movieapp.models.getMovies
+import com.example.movieapp.viewmodels.FavoritesViewModel
+import com.example.movieapp.widgets.FavoriteIcon
 import com.example.movieapp.widgets.HorizontalScrollableImageView
 import com.example.movieapp.widgets.MovieRow
 
-@Preview(showBackground = true)
 @Composable
 fun DetailScreen(
-    navController: NavController = rememberNavController(),
+    navController: NavController = rememberNavController(), favoritesViewModel: FavoritesViewModel,
     movieId: String? = getMovies()[0].id
 ) {
 
@@ -44,19 +44,31 @@ fun DetailScreen(
 
         }
     ) {
-        MainContent(movie = movie)
+        MainContent(movie = movie, favoritesViewModel)
     }
 }
 
 @Composable
-fun MainContent(movie: Movie) {
+fun MainContent(movie: Movie, favoritesViewModel: FavoritesViewModel) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
     ) {
         Column {
-            MovieRow(movie = movie)
+            MovieRow(movie = movie){
+                FavoriteIcon(
+                    movie = movie,
+                    isFavorite = favoritesViewModel.isFavorite(movie)
+                ){ m ->  //callback event
+                if (favoritesViewModel.isFavorite(m)) {
+                    favoritesViewModel.removeFromFavorites(m)
+                } else {
+                    favoritesViewModel.addToFavorites(m)
+                }
+
+            }
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
             Divider()

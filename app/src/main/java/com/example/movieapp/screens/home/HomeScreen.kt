@@ -17,10 +17,16 @@ import androidx.navigation.compose.rememberNavController
 import com.example.movieapp.models.Movie
 import com.example.movieapp.models.getMovies
 import com.example.movieapp.navigation.MovieScreens
+import com.example.movieapp.viewmodels.FavoritesViewModel
+import com.example.movieapp.widgets.FavoriteIcon
 import com.example.movieapp.widgets.MovieRow
 
+
 @Composable
-fun HomeScreen(navController: NavController = rememberNavController()) {
+fun HomeScreen(
+    navController: NavController = rememberNavController(), viewModel: FavoritesViewModel
+
+) {
 
     var showMenu by remember {
         mutableStateOf(false)
@@ -58,23 +64,46 @@ fun HomeScreen(navController: NavController = rememberNavController()) {
 
         }
     ) {
-        MainContent(navController = navController, movieList = getMovies())
+        MainContent(
+            navController = navController, favoritesViewModel = viewModel)
     }
 
 }
 
 
 @Composable
-fun MainContent(navController: NavController, movieList: List<Movie>) {
+fun MainContent(
+    navController: NavController,
+    favoritesViewModel: FavoritesViewModel,
+    movies: List<Movie> = getMovies()
+) {
 
     LazyColumn {
         // item { Text(text = "Header") }
+        items(movies) { movie ->
+            MovieRow(
+                movie = movie,
+                onItemClick = { movieId ->
+                    navController.navigate(route = MovieScreens.DetailScreen.name + "/$movieId")
+                }
+            ) {
+                FavoriteIcon(
+                    movie = movie,
+                    isFavorite = favoritesViewModel.isFavorite(movie)
+                ) { m ->  //callback event
+                    if (favoritesViewModel.isFavorite(m)) {
+                        favoritesViewModel.removeFromFavorites(m)
+                    } else {
+                        favoritesViewModel.addToFavorites(m)
+                    }
 
-        items(items = movieList) { movie ->
-            MovieRow(movie = movie) { movieId ->
-                navController.navigate(route = MovieScreens.DetailScreen.name + "/$movieId")
+                }
+
             }
         }
 
     }
 }
+
+
+
